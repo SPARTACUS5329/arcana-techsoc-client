@@ -5,7 +5,7 @@ import Home from "./pages/Home";
 
 function App() {
 	return (
-		<div className="App">
+		<div style={{ height: "100vh" }}>
 			<Router>
 				<Switch>
 					<Route path="/" component={Home} />

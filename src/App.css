@@ -1,0 +1,31 @@
+.centered {
+    display: flex;
+    justify-content: center;
+}
+
+.even-spaced {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.between-spaced {
+    display: flex;
+    justify-content: space-between;
+}
+
+.vertical-center {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.vertical-between {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.text-vertical-center {
+    margin-top: auto;
+    margin-bottom: auto;
+}

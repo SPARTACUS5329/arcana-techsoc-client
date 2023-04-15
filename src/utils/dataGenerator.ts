@@ -1,7 +1,6 @@
 import { Datapoint } from "./types";
 
 export const dataGenerator = (dataSource: Datapoint[]) => {
-	console.log(dataSource);
 	return {
 		labels: dataSource.map((dataPoint: Datapoint) => dataPoint["date"]),
 		datasets: [
