@@ -1,25 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PreviewCard from "./PreviewCard";
 import axios from "../config/_axios";
 import { Button, Input } from "antd";
-
-const symbols = [
-	{
-		tag: "AFL",
-		company: "Aflac Incorporated",
-	},
-	{
-		tag: "WDC",
-		company: "Western Digital Corp",
-	},
-	{
-		tag: "FICO",
-		company: "Fair Isaac Corop",
-	},
-];
+import openNotification from "../utils/openNotification";
+import { NotificationType } from "../utils/types";
 
 function TrendPreview() {
+	const [symbols, setSymbols] = useState<{ symbol: string; company: string }[]>([]);
 	const [query, setQuery] = useState<string>("");
+
+	useEffect(() => {
+		const getPortfolio = async () => {
+			try {
+				const result = await axios.get("/portfolio");
+				setSymbols(result.data);
+			} catch (error) {
+				console.error(error);
+				openNotification(
+					NotificationType["ERROR"],
+					"An error occurred in fetching your portfolio"
+				);
+			}
+		};
+		getPortfolio();
+	}, []);
 
 	const handleSearch = async () => {
 		try {
@@ -51,7 +55,7 @@ function TrendPreview() {
 			</div>
 			<div style={{ height: "100%", zIndex: "-10" }}>
 				{symbols.map((symbol, index: number) => {
-					return <PreviewCard key={index} symbol={symbol.tag} />;
+					return <PreviewCard key={index} symbol={symbol.symbol} />;
 				})}
 			</div>
 		</div>

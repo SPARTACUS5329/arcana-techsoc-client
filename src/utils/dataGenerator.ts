@@ -1,30 +1,33 @@
 import { Datapoint } from "./types";
 
 export const dataGenerator = (dataSource: Datapoint[]) => {
+	if (dataSource.length === 0) return {};
+	const randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
 	return {
 		labels: dataSource.map((dataPoint: Datapoint) => dataPoint["date"]),
 		datasets: [
 			{
 				label: "Price v/s Time",
-				data: dataSource?.map((dataPoint: Datapoint, index: number) => {
-					return dataPoint["price"]; // * dataPoint["volume"];
+				data: dataSource?.map((dataPoint: Datapoint) => {
+					return dataPoint["price"];
 				}),
-				backgroundColor: "#347deb",
+				// yAxisID: "y-axis-" + Math.floor(Math.random() * 1000).toString(),
+				borderColor: randomColor,
+				backgroundColor: randomColor,
+				tension: 0,
 			},
 		],
 	};
 };
 
 export const options = {
+	type: "line",
 	scales: {
 		x: {
 			type: "time" as const,
 			time: {
 				unit: "day" as const,
 			},
-		},
-		y: {
-			beginAtZero: true,
 		},
 	},
 };

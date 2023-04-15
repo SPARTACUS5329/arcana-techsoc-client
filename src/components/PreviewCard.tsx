@@ -1,15 +1,14 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { SymbolContext } from "../SymbolContext";
-import useSymbolDetails from "../utils/useSymbolDetails";
+import { Button } from "antd";
+import { PlusCircleOutlined } from "@ant-design/icons";
+import { SymbolsContext } from "../SymbolContext";
 
 const ALPHA_VANTAGE_KEY: string = import.meta.env.VITE_ALPHA_VANTAGE_KEY;
 
 function PreviewCard({ symbol }: { symbol: string }) {
 	const [stock, setStock] = useState<any>(null);
-	const [, setSymbol] = useContext(SymbolContext);
-
-	// useSymbolDetails(symbol, setStock);
+	const [symbols, setSymbols] = useContext(SymbolsContext);
 
 	useEffect(() => {
 		const getSymbolDetails = async () => {
@@ -17,7 +16,7 @@ function PreviewCard({ symbol }: { symbol: string }) {
 				const result = await axios.get(
 					`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${ALPHA_VANTAGE_KEY}`
 				);
-				setStock((stock: any) => {
+				setStock(() => {
 					const parsedResult: any = {};
 					for (const key of Object.keys(result.data)) {
 						for (const subkey of Object.keys(result.data[key])) {
@@ -34,6 +33,11 @@ function PreviewCard({ symbol }: { symbol: string }) {
 		getSymbolDetails();
 	}, []);
 
+	const handleAddComparison = () => {
+		if (!setSymbols) return;
+		setSymbols((symbols) => [...symbols, { tag: stock.symbol, company: stock.symbol }]);
+	};
+
 	return (
 		<div
 			className="vertical-center"
@@ -42,16 +46,10 @@ function PreviewCard({ symbol }: { symbol: string }) {
 				height: "15%",
 				border: "1px solid white",
 				background: "#040f07",
-			}}
-			onClick={(e) => {
-				e.preventDefault();
-				// console.log(symbol);
-				if (!setSymbol) return;
-				setSymbol({ tag: symbol, company: symbol });
 			}}>
 			<div className="between-spaced">
 				<div style={{ fontSize: "1.5rem", marginLeft: "10px" }}>{stock?.symbol}</div>
-				<div style={{ marginRight: "10px" }}>
+				<div>
 					<div>{stock?.price}</div>
 					<div
 						style={{
@@ -65,6 +63,11 @@ function PreviewCard({ symbol }: { symbol: string }) {
 						}}>
 						{stock && stock["change percent"]}
 					</div>
+				</div>
+				<div style={{ marginRight: "10px" }}>
+					<Button type="primary" onClick={handleAddComparison}>
+						<PlusCircleOutlined />
+					</Button>
 				</div>
 			</div>
 		</div>
