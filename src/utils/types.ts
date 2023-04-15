@@ -9,3 +9,9 @@ export interface Stock {
 	tag: string;
 	company: string;
 }
+
+export enum NotificationType {
+	ERROR = "error",
+	WARNING = "warning",
+	SUCCESS = "success",
+}

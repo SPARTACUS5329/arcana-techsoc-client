@@ -23,17 +23,18 @@ function History() {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	useEffect(() => {
-		const getIntradayHistory = async () => {
+		const getSymbolHistory = async () => {
 			try {
-				const result = await axios.get(`/data?symbol=${currentSymbol?.tag}`);
+				setIsLoading(true);
+				const result = await axios.get(`/symbol-data?symbol=${currentSymbol?.tag}`);
 				setHistory(dataGenerator(result.data));
 				setIsLoading(false);
 			} catch (error) {
 				console.error(error);
 			}
 		};
-		getIntradayHistory();
-	}, []);
+		getSymbolHistory();
+	}, [currentSymbol]);
 
 	return (
 		<div
@@ -43,9 +44,10 @@ function History() {
 				height: "60vh",
 				textAlign: "center",
 				borderRadius: "25px",
+				background: "#1a0612",
 			}}>
 			{isLoading && <Loader />}
-			{history && <Scatter data={history} options={options} />}
+			{isLoading || (history && <Scatter data={history} options={options} />)}
 		</div>
 	);
 }
