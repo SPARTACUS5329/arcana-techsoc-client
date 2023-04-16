@@ -10,11 +10,14 @@ import {
 } from "chart.js";
 import "chartjs-adapter-date-fns";
 import { Scatter } from "react-chartjs-2";
-import { dataGenerator, options } from "../utils/dataGenerator";
+import { dataGenerator, options, predictionDataGenerator } from "../utils/dataGenerator";
 import axios from "../config/_axios";
 import { SymbolsContext } from "../SymbolContext";
 import Loader from "./Loader";
-import { Stock } from "../utils/types";
+import { NotificationType, Stock } from "../utils/types";
+import { RSI } from "../utils/constants";
+import { Button, Divider } from "antd";
+import openNotification from "../utils/openNotification";
 
 const ALPHA_VANTAGE_KEY: string = import.meta.env.VITE_ALPHA_VANTAGE_KEY;
 
@@ -24,6 +27,8 @@ function History({ symbol }: { symbol: Stock }) {
 	const [history, setHistory] = useState<any>(null);
 	const [stock, setStock] = useState<any>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [sentientAnalysis, setSentientAnalysis] = useState<any>([]);
+	const [prediction, setPrediction] = useState<any>([]);
 
 	useEffect(() => {
 		const getSymbolDetails = async () => {
@@ -59,9 +64,53 @@ function History({ symbol }: { symbol: Stock }) {
 		getSymbolHistory();
 	}, [symbol]);
 
+	const handleLoadSentient = async () => {
+		try {
+			const result = await axios.get("/sentient");
+			setSentientAnalysis(result.data);
+		} catch (error) {
+			console.error(error);
+			openNotification(NotificationType["ERROR"], "An error occurred");
+		}
+	};
+
+	const handlePredict = async () => {
+		try {
+			const result = await axios.get("/predict");
+			setPrediction(result.data);
+		} catch (error) {
+			console.error(error);
+			openNotification(NotificationType["ERROR"], "An error occurred");
+		}
+	};
+
 	return (
 		<div style={{ color: "white" }}>
-			<div style={{ fontSize: "3rem" }}>{symbol.company}</div>
+			<div className="between-spaced">
+				<div style={{ fontSize: "3rem" }}>{symbol.company}</div>
+				{sentientAnalysis.length > 0 &&
+					sentientAnalysis.map((point: any, index: number) => (
+						<div key={index}>
+							<div>
+								<b>Year:</b> {point[0]}
+							</div>
+							<div>
+								<b>Scores:</b>
+								{point[1]}
+							</div>
+						</div>
+					))}
+				<div className="text-vertical-center centered">
+					<Button type="primary" onClick={handleLoadSentient}>
+						Transcript Analysis
+					</Button>
+				</div>
+				<div className="text-vertical-center centered">
+					<Button type="primary" onClick={handlePredict}>
+						Predict
+					</Button>
+				</div>
+			</div>
 			<div className="between-spaced">
 				<div style={{ display: "flex" }}>
 					<div style={{ fontSize: "2rem", marginRight: "7px" }}>${stock?.price}</div>
@@ -108,7 +157,38 @@ function History({ symbol }: { symbol: Stock }) {
 					background: "#1a0612",
 				}}>
 				{isLoading && <Loader />}
-				{isLoading || (history && <Scatter data={history} options={options} />)}
+				{isLoading ||
+					(history && prediction.length === 0 && (
+						<Scatter data={history} options={options} />
+					))}
+				{isLoading ||
+					(history && prediction.length > 0 && (
+						<Scatter
+							data={predictionDataGenerator(history, prediction)}
+							options={options}
+						/>
+					))}
+				{isLoading || (
+					<Scatter
+						style={{ marginTop: "60px" }}
+						data={{
+							datasets: [
+								{
+									label: "RSI v/s Time",
+									data: RSI.map((point, index) => {
+										return {
+											x: index,
+											y: point,
+										};
+									}),
+									borderColor: "#146ab1",
+									backgroundColor: "#146ab1",
+									tension: 0,
+								},
+							],
+						}}
+					/>
+				)}
 			</div>
 		</div>
 	);
