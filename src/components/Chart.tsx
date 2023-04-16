@@ -164,8 +164,6 @@ function History({ symbol }: { symbol: Stock }) {
 				{isLoading ||
 					(history && prediction.length > 0 && (
 						<Scatter
-							// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-							// @ts-ignore
 							data={predictionDataGenerator(history, prediction)}
 							options={options}
 						/>

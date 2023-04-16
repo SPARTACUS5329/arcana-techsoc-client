@@ -20,15 +20,12 @@ export const dataGenerator = (dataSource: Datapoint[]) => {
 };
 
 export const predictionDataGenerator = (history: any, dataSource: any[]) => {
-	if (!dataSource || dataSource.length === 0) return {};
+	if (!dataSource || dataSource.length === 0)
+		return {
+			datasets: [],
+		};
 	const randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
 	return {
-		// labels: [
-		// 	...history.labels.map((dataPoint: Datapoint) => dataPoint["date"]),
-		// 	...dataSource.map((point, index) =>
-		// 		(parseInt(history.labels[history.labels.length - 1]["date"]) + index).toString()
-		// 	),
-		// ],
 		datasets: [
 			{
 				label: "Prediction Price v/s Time",
