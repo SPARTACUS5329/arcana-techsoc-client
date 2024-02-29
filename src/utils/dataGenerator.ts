@@ -4,7 +4,7 @@ export const dataGenerator = (dataSource: Datapoint[]) => {
 	if (dataSource.length === 0) return {};
 	const randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
 	return {
-		labels: dataSource.map((dataPoint: Datapoint) => dataPoint["date"]),
+		labels: dataSource.map((dataPoint) => dataPoint["date"]),
 		datasets: [
 			{
 				label: "Price v/s Time",
